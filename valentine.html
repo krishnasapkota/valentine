@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will you be my Valentine?</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ffc0cb 0%, #ffb6c1 50%, #ffc0cb 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+            padding: 10px;
+        }
+
+        /* Floating decorations */
+        .decoration {
+            position: fixed;
+            font-size: clamp(25px, 4vw, 40px);
+            animation: float 4s ease-in-out infinite;
+            opacity: 0.8;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        /* Left side - Photo grid */
+        .photo-container {
+            position: fixed;
+            left: clamp(10px, 2vw, 30px);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: clamp(10px, 1.5vw, 15px);
+            z-index: 5;
+        }
+
+        .photo {
+            width: clamp(70px, 10vw, 120px);
+            height: clamp(90px, 13vw, 160px);
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Right side - TikTok style buttons */
+        .tiktok-sidebar {
+            position: fixed;
+            right: clamp(10px, 2vw, 30px);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: clamp(15px, 2vw, 20px);
+            z-index: 5;
+        }
+
+        .profile-pic {
+            width: clamp(40px, 5vw, 50px);
+            height: clamp(40px, 5vw, 50px);
+            border-radius: 50%;
+            border: 2px solid white;
+            background: #666;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .profile-pic img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .plus-btn {
+            width: clamp(20px, 2.5vw, 24px);
+            height: clamp(20px, 2.5vw, 24px);
+            background: #ff2d55;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(14px, 1.8vw, 16px);
+            font-weight: bold;
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 2px solid #ffc0cb;
+        }
+
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            color: #333;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .action-btn .icon {
+            width: clamp(35px, 4.5vw, 45px);
+            height: clamp(35px, 4.5vw, 45px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(22px, 3vw, 28px);
+        }
+
+        .action-btn .count {
+            font-size: clamp(10px, 1.2vw, 12px);
+            font-weight: bold;
+        }
+
+        /* Main card */
+        .card-container {
+            background: white;
+            border-radius: clamp(20px, 3vw, 25px);
+            padding: clamp(25px, 5vw, 40px);
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .watermark {
+            color: #999;
+            font-size: clamp(10px, 1.2vw, 11px);
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+
+        .main-title {
+            font-size: clamp(22px, 4vw, 28px);
+            color: #333;
+            margin: clamp(15px, 2.5vw, 20px) 0;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: clamp(11px, 1.5vw, 13px);
+            margin-bottom: clamp(20px, 3vw, 25px);
+            font-style: italic;
+        }
+
+        /* Music player */
+        .music-player {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #fff5f8;
+            padding: clamp(8px, 1.2vw, 10px) clamp(15px, 2.5vw, 20px);
+            border-radius: 20px;
+            margin-bottom: clamp(20px, 3vw, 25px);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .music-player:hover {
+            background: #ffe5ed;
+            transform: scale(1.05);
+        }
+
+        .play-icon {
+            color: #ff69b4;
+            font-size: clamp(12px, 1.5vw, 14px);
+        }
+
+        .music-text {
+            color: #ff69b4;
+            font-size: clamp(11px, 1.5vw, 13px);
+            font-weight: 600;
+        }
+
+        /* Love meter */
+        .love-meter-section {
+            margin: clamp(20px, 3vw, 25px) 0;
+        }
+
+        .meter-title {
+            color: #666;
+            font-size: clamp(12px, 1.6vw, 14px);
+            margin-bottom: 8px;
+        }
+
+        .meter-subtitle {
+            color: #aaa;
+            font-size: clamp(10px, 1.3vw, 11px);
+            margin-bottom: 12px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: clamp(22px, 3vw, 25px);
+            background: #f0f0f0;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff69b4 0%, #ff1493 100%);
+            width: 0%;
+            transition: width 2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: clamp(8px, 1.5vw, 12px);
+            font-size: clamp(11px, 1.4vw, 12px);
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Buttons */
+        .button-area {
+            margin-top: clamp(25px, 4vw, 30px);
+            position: relative;
+            min-height: clamp(80px, 12vw, 120px);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .btn {
+            padding: clamp(12px, 1.8vw, 14px) clamp(35px, 5vw, 45px);
+            border: none;
+            border-radius: 30px;
+            font-size: clamp(15px, 2vw, 17px);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-yes {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: white;
+            z-index: 2;
+            position: relative;
+        }
+
+        .btn-yes:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+        }
+
+        .btn-yes:active {
+            transform: scale(0.98);
+        }
+
+        .btn-no {
+            background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+            color: white;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: clamp(50px, 8vw, 60px);
+            z-index: 1;
+        }
+
+        .btn-no:hover {
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Response message */
+        .response-box {
+            margin-top: clamp(20px, 3vw, 25px);
+            padding: clamp(15px, 2.5vw, 20px);
+            background: #fff5f8;
+            border-radius: 15px;
+            display: none;
+        }
+
+        .response-box.active {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .response-title {
+            color: #ff69b4;
+            font-size: clamp(18px, 2.5vw, 20px);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .response-subtitle {
+            color: #888;
+            font-size: clamp(11px, 1.5vw, 13px);
+            font-style: italic;
+        }
+
+        /* Image display area */
+        .image-display {
+            margin-top: 20px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: none;
+            animation: fadeInScale 0.5s ease;
+        }
+
+        .image-display.active {
+            display: block;
+        }
+
+        .image-display img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Hearts celebration */
+        .hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            display: none;
+        }
+
+        .hearts-container.active {
+            display: block;
+        }
+
+        .floating-heart {
+            position: absolute;
+            font-size: clamp(25px, 3.5vw, 35px);
+            animation: riseUp 3s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes riseUp {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Mobile specific - phones (portrait) */
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+
+            .photo-container {
+                left: 5px;
+            }
+
+            .tiktok-sidebar {
+                right: 5px;
+            }
+
+            .card-container {
+                width: calc(100% - 140px);
+                min-width: 280px;
+            }
+
+            .button-area {
+                min-height: 90px;
+            }
+        }
+
+        /* Tablets (portrait and landscape) */
+        @media (min-width: 481px) and (max-width: 1024px) {
+            .card-container {
+                max-width: 500px;
+                width: calc(100% - 200px);
+            }
+
+            .photo-container {
+                left: 15px;
+            }
+
+            .tiktok-sidebar {
+                right: 15px;
+            }
+        }
+
+        /* Laptops and small desktops */
+        @media (min-width: 1025px) and (max-width: 1440px) {
+            .card-container {
+                max-width: 550px;
+            }
+
+            .photo-container {
+                left: 30px;
+            }
+
+            .tiktok-sidebar {
+                right: 30px;
+            }
+
+            .decoration {
+                font-size: 40px;
+            }
+        }
+
+        /* Large desktops */
+        @media (min-width: 1441px) {
+            .card-container {
+                max-width: 600px;
+            }
+
+            .photo-container {
+                left: 50px;
+            }
+
+            .tiktok-sidebar {
+                right: 50px;
+            }
+
+            .decoration {
+                font-size: 50px;
+            }
+
+            .photo {
+                width: 140px;
+                height: 180px;
+            }
+        }
+
+        /* Landscape mode on phones */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .photo-container,
+            .tiktok-sidebar {
+                display: none;
+            }
+
+            .card-container {
+                width: 90%;
+                max-width: 550px;
+            }
+
+            body {
+                padding: 20px;
+            }
+        }
+
+        /* Very small devices */
+        @media (max-width: 360px) {
+            .card-container {
+                width: calc(100% - 100px);
+                padding: 20px 15px;
+            }
+
+            .photo,
+            .tiktok-sidebar {
+                transform: scale(0.8);
+            }
+        }
+
+        /* Touch device optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .btn {
+                min-height: 48px;
+                min-width: 120px;
+            }
+
+            .action-btn {
+                padding: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hearts container -->
+    <div class="hearts-container" id="heartsContainer"></div>
+
+    <!-- Floating decorations -->
+    <div class="decoration" style="top: 8%; left: 8%; animation-delay: 0s;">🐻</div>
+    <div class="decoration" style="top: 15%; right: 12%; animation-delay: 1s;">🌸</div>
+    <div class="decoration" style="top: 45%; left: 5%; animation-delay: 1.5s;">💕</div>
+    <div class="decoration" style="bottom: 20%; left: 15%; animation-delay: 0.5s;">🎀</div>
+    <div class="decoration" style="bottom: 12%; right: 8%; animation-delay: 2s;">💝</div>
+    <div class="decoration" style="top: 60%; right: 10%; animation-delay: 0.8s;">🌹</div>
+
+    <!-- Left photo grid -->
+    <div class="photo-container">
+        <div class="photo">
+            <!-- Replace with your image: <img src="photo1.jpg" alt="Photo 1"> -->
+            <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+        </div>
+        <div class="photo">
+            <!-- Replace with your image: <img src="photo2.jpg" alt="Photo 2"> -->
+            <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+        </div>
+    </div>
+
+    <!-- Right TikTok sidebar -->
+    <div class="tiktok-sidebar">
+        <div class="profile-pic">
+            <!-- Replace with your image: <img src="profile.jpg" alt="Profile"> -->
+            <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);"></div>
+            <div class="plus-btn">+</div>
+        </div>
+        <div class="action-btn">
+            <div class="icon">🤍</div>
+            <div class="count">11.5K</div>
+        </div>
+        <div class="action-btn">
+            <div class="icon">💬</div>
+            <div class="count">91</div>
+        </div>
+        <div class="action-btn">
+            <div class="icon">📥</div>
+            <div class="count">902</div>
+        </div>
+    </div>
+
+    <!-- Main card -->
+    <div class="card-container">
+        <div class="watermark">Made with CODETITEC.COM</div>
+        
+        <div class="music-player" id="musicPlayer">
+            <span class="play-icon">▶</span>
+            <span class="music-text">🎵 Play Music</span>
+        </div>
+
+        <h1 class="main-title">Will you be my Valentine, Jaanu?</h1>
+        <p class="subtitle">on khureg chn khane roko click padhaucha</p>
+
+        <!-- Love Meter -->
+        <div class="love-meter-section">
+            <div class="meter-title">Love Meter</div>
+            <div class="meter-subtitle">testing your baby meter numbers up</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill">0%</div>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="button-area">
+            <button class="btn btn-yes" id="btnYes">Yes ✨</button>
+            <button class="btn btn-no" id="btnNo">No 💔</button>
+        </div>
+
+        <!-- Image Display Area -->
+        <div class="image-display" id="imageDisplay">
+            <img id="displayedImage" src="" alt="Response Image">
+        </div>
+
+        <!-- Response -->
+        <div class="response-box" id="responseBox">
+            <div class="response-title">My pleae u yea</div>
+            <div class="response-subtitle">na khana dalra u khae</div>
+        </div>
+    </div>
+
+    <script>
+        // Elements
+        const progressFill = document.getElementById('progressFill');
+        const btnYes = document.getElementById('btnYes');
+        const btnNo = document.getElementById('btnNo');
+        const responseBox = document.getElementById('responseBox');
+        const heartsContainer = document.getElementById('heartsContainer');
+        const musicPlayer = document.getElementById('musicPlayer');
+        const imageDisplay = document.getElementById('imageDisplay');
+        const displayedImage = document.getElementById('displayedImage');
+
+        let noClickCount = 0;
+        let isPlaying = false;
+
+        // ===================================
+        // IMAGE CONFIGURATION - CUSTOMIZE HERE
+        // ===================================
+        
+        // Array of images to show when "No" is clicked
+        // Add your own image URLs or paths here
+        const noImages = [
+            'a.jpg',  // Replace with your image URL
+            'a.jpg',  // Replace with your image URL
+            'https://i.imgur.com/example3.jpg',  // Replace with your image URL
+            'https://i.imgur.com/example4.jpg',  // Replace with your image URL
+            'https://i.imgur.com/example5.jpg',  // Replace with your image URL
+            'https://i.imgur.com/example6.jpg',  // Replace with your image URL
+            'https://i.imgur.com/example7.jpg',  // Replace with your image URL
+            'https://i.imgur.com/example8.jpg',  // Replace with your image URL
+        ];
+
+        // Single image to show when "Yes" is clicked
+        const yesImage = 'https://i.imgur.com/your-yes-image.jpg';  // Replace with your image URL
+
+        // ===================================
+        // END OF IMAGE CONFIGURATION
+        // ===================================
+
+        // Animate progress bar on load
+        setTimeout(() => {
+            progressFill.style.width = '100%';
+            progressFill.textContent = '100%';
+        }, 500);
+
+        // Music player toggle
+        musicPlayer.addEventListener('click', () => {
+            isPlaying = !isPlaying;
+            const playIcon = musicPlayer.querySelector('.play-icon');
+            playIcon.textContent = isPlaying ? '⏸' : '▶';
+            
+            // Optional: Add actual audio
+            // const audio = new Audio('your-music.mp3');
+            // if (isPlaying) {
+            //     audio.play();
+            // } else {
+            //     audio.pause();
+            // }
+        });
+
+        // Yes button - show success and YES image
+        btnYes.addEventListener('click', () => {
+            // Show the YES image
+            displayedImage.src = yesImage;
+            imageDisplay.classList.add('active');
+            
+            // Show response message
+            responseBox.classList.add('active');
+            
+            // Hide buttons
+            btnYes.style.display = 'none';
+            btnNo.style.display = 'none';
+            
+            // Launch hearts
+            launchHearts();
+        });
+
+        // No button - moves away on hover and shows different images
+        function moveNoButton() {
+            // Show a random image from the noImages array
+            const randomIndex = Math.floor(Math.random() * noImages.length);
+            displayedImage.src = noImages[randomIndex];
+            imageDisplay.classList.remove('active'); // Remove first
+            setTimeout(() => {
+                imageDisplay.classList.add('active'); // Re-add for animation
+            }, 10);
+            
+            noClickCount++;
+            
+            const container = btnNo.parentElement;
+            const containerRect = container.getBoundingClientRect();
+            const maxX = containerRect.width - btnNo.offsetWidth - 40;
+            const maxY = containerRect.height - btnNo.offsetHeight - 20;
+            
+            const randomX = Math.random() * Math.max(maxX, 50);
+            const randomY = Math.random() * Math.max(maxY, 20);
+            
+            btnNo.style.left = randomX + 'px';
+            btnNo.style.top = randomY + 'px';
+            btnNo.style.transform = 'none';
+
+            // Make Yes button bigger (max 2x size)
+            const scale = Math.min(1 + (noClickCount * 0.15), 2);
+            btnYes.style.transform = scale(${scale});
+        }
+
+        // Desktop hover
+        btnNo.addEventListener('mouseover', moveNoButton);
+        
+        // Mobile touch (prevents click)
+        btnNo.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            moveNoButton();
+        });
+
+        // Launch hearts animation
+        function launchHearts() {
+            heartsContainer.classList.add('active');
+            
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'floating-heart';
+                    heart.textContent = ['❤️', '💕', '💖', '💗', '💝'][Math.floor(Math.random() * 5)];
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.animationDelay = Math.random() * 0.5 + 's';
+                    heartsContainer.appendChild(heart);
+                    
+                    setTimeout(() => heart.remove(), 3000);
+                }, i * 100);
+            }
+        }
+
+        // Add random floating decorations
+        function addFloatingDecoration() {
+            const decorations = ['🌸', '💕', '🐻', '🎀', '🌹', '💝', '✨'];
+            const deco = document.createElement('div');
+            deco.className = 'decoration';
+            deco.textContent = decorations[Math.floor(Math.random() * decorations.length)];
+            deco.style.top = Math.random() * 100 + '%';
+            deco.style.left = Math.random() * 100 + '%';
+            deco.style.animationDelay = Math.random() * 2 + 's';
+            document.body.appendChild(deco);
+            
+            setTimeout(() => deco.remove(), 6000);
+        }
+
+        setInterval(addFloatingDecoration, 4000);
+    </script>
+</body>
+</html>
